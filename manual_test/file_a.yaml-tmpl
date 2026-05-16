@@ -1,0 +1,5 @@
+main:
+  setting:
+    foo: REPLACE_QWERTY_MAIN_SETTING_FOO
+    g: 6
+    secret: REPLACE_QWERTY_MAIN_SETTING_SECRET

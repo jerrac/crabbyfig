@@ -1,0 +1,5 @@
+main:
+  setting:
+    foo: supercalifragilisticexpialidocious
+    g: 6
+    secret: I_AM_YOUR_FATHER

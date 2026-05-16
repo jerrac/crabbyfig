@@ -1,0 +1,8 @@
+/target
+/.idea
+/tmp
+/manual_test/file_a.yaml
+/manual_test/file_b.ini
+/manual_test/file_c.yaml
+/manual_test/file_d.yaml
+/manual_test/crabby_targets

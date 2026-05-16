@@ -1,0 +1,4 @@
+[main]
+setting_foo = REPLACE_QWERTY_MAIN_SETTING_FOO
+setting_g = 6
+setting_secret = REPLACE_QWERTY_MAIN_SETTING_SECRET
