@@ -8,8 +8,16 @@ fn main() {
 }
 
 fn run() -> Result<(), String> {
-    let prefix = std::env::var("CRABBYFIX")
+    let prefix_load = std::env::var("CRABBYFIX")
         .map_err(|_| "CRABBYFIX environment variable must be set".to_string())?;
+    let prefixes: Vec<String> = prefix_load.split(',').map(|s| s.to_string()).collect();
+    for prefix in prefixes.clone().iter() {
+        run_for_prefix(prefix)?;
+    }
+    Ok(())
+}
+
+fn run_for_prefix(prefix: &String) -> Result<(), String> {
     let targets = load_targets();
     if !targets.is_ok() {
         return Err("Failed to load targets".to_string());
@@ -29,6 +37,7 @@ fn run() -> Result<(), String> {
     }
     Ok(())
 }
+
 fn targets_from_file(file_path: &str) -> Result<String, String> {
     // Parse the contents of the file into the same format as if
     // the user was using a csv string in the normal environment variable.
@@ -206,7 +215,10 @@ fn test_process_var_file_invalid() {
 
 fn log_message(message: &str, level: &str) {
     let date_string = chrono::Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
-    let parsed = format!("{} [CRABBYFIG][{}] {}", date_string, level, message);
+    let parsed = format!(
+        "timestamp=\"{}\" app=\"CRABBYFIG\" level=\"{}\" message=\"{}\"",
+        date_string, level, message
+    );
     println!("{}", parsed);
 }
 #[test]

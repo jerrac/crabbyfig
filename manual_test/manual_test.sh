@@ -8,10 +8,12 @@ echo "$SCRIPT_DIR/file_c.txt" > "$SCRIPT_DIR/crabby_targets"
 echo "$SCRIPT_DIR/file_d.txt" >> "$SCRIPT_DIR/crabby_targets"
 cp "$SCRIPT_DIR/file_a.yaml-tmpl" "$SCRIPT_DIR/file_c.txt";
 cp "$SCRIPT_DIR/file_a.yaml-tmpl" "$SCRIPT_DIR/file_d.txt";
+cp "$SCRIPT_DIR/file_e.txt-tmpl" "$SCRIPT_DIR/file_e.txt";
 FILE_A_CONTENTS_INITIAL=$(cat "$SCRIPT_DIR/file_a.yaml");
 FILE_B_CONTENTS_INITIAL=$(cat "$SCRIPT_DIR/file_b.ini");
 FILE_C_CONTENTS_INITIAL=$(cat "$SCRIPT_DIR/file_c.txt");
 FILE_D_CONTENTS_INITIAL=$(cat "$SCRIPT_DIR/file_d.txt");
+FILE_E_CONTENTS_INITIAL=$(cat "$SCRIPT_DIR/file_e.txt");
 
 ## Run with vars set before the command.
 CRABBYFIX=QWERTY_ \
@@ -21,7 +23,7 @@ CRABBYGETS="$SCRIPT_DIR/file_a.yaml,$SCRIPT_DIR/file_b.ini" \
 CRABBYGETS_FILE="$SCRIPT_DIR/crabby_targets" \
 QWERTY_MAIN_SETTING_FOO="supercalifragilisticexpialidocious" \
 QWERTY_MAIN_SETTING_SECRET_FILE="$SCRIPT_DIR/main_secret.txt" \
-cargo run
+./target/release/crabbyfig
 
 ## Now check if the contents changed
 FILE_A_CONTENTS_POST=$(cat "$SCRIPT_DIR/file_a.yaml");
@@ -74,4 +76,28 @@ else
   echo "SUCCESS: file_d.txt contents changed."
   echo "Changed: "
   echo "$FILE_D_CONTENTS_POST"
+fi
+
+## Run for file_e with multiple prefixes.
+
+CRABBYFIX="QWERTY_,QWERTY2_" \
+CRABBYWAIT=5 \
+CRABBYWAITCOUNT=3 \
+CRABBYGETS="$SCRIPT_DIR/file_e.txt" \
+QWERTY2_NAME="Mary" \
+QWERTY_MAIN_SETTING_FOO="supercalifragilisticexpialidocious" \
+./target/release/crabbyfig
+
+FILE_E_CONTENTS_POST=$(cat "$SCRIPT_DIR/file_e.txt");
+
+if [[ "$FILE_E_CONTENTS_INITIAL" == "$FILE_E_CONTENTS_POST" ]]; then
+  echo "ERROR: file_e.txt contents did not change.";
+  echo "Initial: "
+  echo "$FILE_E_CONTENTS_INITIAL" 
+  echo "Post: " 
+  echo "$FILE_E_CONTENTS_POST"
+else
+  echo "SUCCESS: file_e.txt contents changed."
+  echo "Changed: "
+  echo "$FILE_E_CONTENTS_POST"
 fi
