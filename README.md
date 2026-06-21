@@ -5,14 +5,58 @@ the startup process in Docker containers.
 
 Fully supports passing secrets via `*_FILE` vars.
 
-## Usage
+## Configure Your Environment
 
-1) Set `CRABBYFIX` to the prefix you are using for your service environment variables.
-2) Set `CRABBYGETS` to a comma-separated list of files to replace strings in.
-3) (Optional) Set `CRABBYGETS_FILE` to the path of a file in the same environment as you are running CrabbyFig that
-   contains a list of files to replace strings in. This is meant for when the normal `CRABBYGETS` var grows too large.
-   Either keep the file as a single CSV line, or put one file per line. CrabbyFig will convert the file into a single
-   CSV line, and then add it to the main `CRABBYGETS` string.
+### (REQUIRED) Setting String Replacements
+
+In the files you need to configure, add replacement strings for each value you want to replace.
+
+Use the format: `REPLACE_< CRABBYFIX>_< whatever you want >`.
+
+In the process environment, set each replacement string using a key that matches the format:
+`< CRABBYFIX>_< whatever you want >`.
+
+It should match the string to be replaced, jut without the `REPLACE_` prefix.
+
+So, `REPLACE_MYPREFIX_MYDATAITEM` would be replaced by the value in the variable `MYPREFIX_MYDATAITEM`.
+
+### (OPTIONAL) Defaults File
+
+For each prefix, you can include a "DEFAULTS" file.
+
+Just set an environment variable using the format: `< CRABBYFIX>_DEFAULTS_FILE`.
+
+For example: `MYPREFIX_DEFAULTS_FILE=/path/to/file`, then in `/path/to/file` you can set the default value for
+`MYPREFIX_MYDATAITEM`.
+
+One variable per line.
+
+When loading, the defaults file is loaded first so that any environment variables will override the defaults.
+
+### (REQUIRED) Set `CRABBYFIX`
+
+The value should be the prefix you are using for your service environment variables.
+
+Must end in an underscore. `MYPREFIX_`.
+
+More than one prefix is supported. List them separated via commas. `MYPREFIX_,ANOTHERPREFIX_`
+
+#### (REQUIRED) Set `CRABBYGETS`
+
+Lists the absolute paths to the files that should be processed.
+
+Separated via commas: `/path/to/a,/path/to/b`
+
+#### (OPTIONAL) Set `CRABBYGETS_FILE`
+
+The absolute path of a file that contains a list of files that should be processed.
+
+This is meant for when the normal `CRABBYGETS` var grows too large.
+
+Either keep the file as a single CSV line, or put one file per line.
+
+CrabbyFig will convert the file into a single CSV line, and then add it to the main `CRABBYGETS` string.
+
 4) In your config files, the replacement strings should follow this pattern:
    `REPLACE_< CRABBYFIX>_< whatever you want >`. Then, in your service environment, you would set the variable names to
    be `< CRABBYFIX >_< whatever you want >`. If the variable name ends in `_FILE`, CrabbyFig will treat it as a file

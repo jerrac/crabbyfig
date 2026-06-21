@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::process::exit;
 
 fn main() {
@@ -22,17 +23,31 @@ fn run_for_prefix(prefix: &String) -> Result<(), String> {
     if !targets.is_ok() {
         return Err("Failed to load targets".to_string());
     }
+    let mut key_value_hash: HashMap<String, String> = HashMap::new();
+    let prefix_defaults_var_name = format!("{}DEFAULTS_FILE", prefix);
+    if let Ok(defaults_file) = std::env::var(prefix_defaults_var_name.as_str()) {
+        let vars = vars_from_file(defaults_file.as_str());
+        if vars.is_ok() {
+            for (k, v) in vars.unwrap().iter() {
+                key_value_hash.insert(k.to_string(), v.to_string());
+            }
+        }
+    }
     for (key, value) in std::env::vars() {
         if key.starts_with(prefix.as_str()) && value.len() > 0 {
             let processed = process_var(key.as_str(), value.as_str());
-            let (use_key, use_value) = match processed {
-                Ok((use_key, use_value)) => (use_key, use_value),
+            match processed {
+                Ok((use_key, use_value)) => {
+                    key_value_hash.insert(use_key.to_string(), use_value.to_string())
+                }
                 Err(e) => return Err(e),
             };
-            for item in targets.clone().unwrap().iter() {
-                process_file(item.clone(), use_key.clone(), use_value.clone())
-                    .map_err(|e| e.to_string())?;
-            }
+        }
+    }
+    for (key, value) in key_value_hash.iter() {
+        for item in targets.clone().unwrap().iter() {
+            process_file(item.clone(), key.to_string(), value.to_string())
+                .map_err(|e| e.to_string())?;
         }
     }
     Ok(())
@@ -52,6 +67,18 @@ fn targets_from_file(file_path: &str) -> Result<String, String> {
         file_contents = file_contents.replace("\r", ",");
     }
     Ok(file_contents)
+}
+
+fn vars_from_file(file_path: &str) -> Result<HashMap<String, String>, String> {
+    let file_contents = std::fs::read_to_string(file_path).expect("Failed to read file");
+    let mut kv: HashMap<String, String> = HashMap::new();
+    let lines = file_contents.split('\n').map(|s| s.to_string());
+    for line in lines {
+        let pair = line.split_once('=').map(|(k, v)| (k, v));
+        kv.insert(pair.unwrap().0.to_string(), pair.unwrap().1.to_string());
+    }
+    println!("kv: {:?}", kv);
+    Ok(kv)
 }
 
 fn load_targets() -> Result<Vec<String>, String> {

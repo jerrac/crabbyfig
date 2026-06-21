@@ -86,6 +86,8 @@ CRABBYWAITCOUNT=3 \
 CRABBYGETS="$SCRIPT_DIR/file_e.txt" \
 QWERTY2_NAME="Mary" \
 QWERTY_MAIN_SETTING_FOO="supercalifragilisticexpialidocious" \
+QWERTY2_DEFAULTS_FILE="$SCRIPT_DIR/QWERTY2_DEFAULTS" \
+QWERTY2_LEVEL=1200 \
 ./target/release/crabbyfig
 
 FILE_E_CONTENTS_POST=$(cat "$SCRIPT_DIR/file_e.txt");
