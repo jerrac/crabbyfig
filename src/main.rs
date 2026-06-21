@@ -81,8 +81,6 @@ fn vars_from_file(file_path: &str) -> Result<HashMap<String, String>, String> {
             kv.insert(use_key.trim().to_string(), value.trim().to_string());
         }
     }
-
-    println!("kv: {:?}", kv);
     Ok(kv)
 }
 
