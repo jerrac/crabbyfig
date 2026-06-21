@@ -72,11 +72,16 @@ fn targets_from_file(file_path: &str) -> Result<String, String> {
 fn vars_from_file(file_path: &str) -> Result<HashMap<String, String>, String> {
     let file_contents = std::fs::read_to_string(file_path).expect("Failed to read file");
     let mut kv: HashMap<String, String> = HashMap::new();
-    let lines = file_contents.split('\n').map(|s| s.to_string());
+
+    let lines = file_contents.lines().filter(|line| !line.trim().is_empty());
+
     for line in lines {
-        let pair = line.split_once('=').map(|(k, v)| (k, v));
-        kv.insert(pair.unwrap().0.to_string(), pair.unwrap().1.to_string());
+        if let Some((key, value)) = line.split_once('=') {
+            let use_key = format!("REPLACE_{}", key);
+            kv.insert(use_key.trim().to_string(), value.trim().to_string());
+        }
     }
+
     println!("kv: {:?}", kv);
     Ok(kv)
 }
