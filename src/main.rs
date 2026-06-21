@@ -1,10 +1,19 @@
 use std::collections::HashMap;
+use std::env;
+use std::path::Path;
 use std::process::exit;
 
 fn main() {
     if let Err(e) = run() {
         log_message(&format!("Error: {}", e), "ERROR");
         exit(1);
+    } else {
+        let state_dir = env::var("CRABBYFIG_STATE_DIR").unwrap_or("/run/crabbyfig".to_string());
+        if !Path::new(&state_dir.clone()).is_dir() {
+            std::fs::create_dir_all(state_dir.clone()).unwrap();
+        }
+        let success_file_path = format!("{}/success", state_dir.clone());
+        std::fs::write(success_file_path, "").unwrap();
     }
 }
 
@@ -244,12 +253,19 @@ fn test_process_var_file_invalid() {
 }
 
 fn log_message(message: &str, level: &str) {
-    let date_string = chrono::Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
-    let parsed = format!(
-        "timestamp=\"{}\" app=\"CRABBYFIG\" level=\"{}\" message=\"{}\"",
-        date_string, level, message
-    );
-    println!("{}", parsed);
+    // levels: trace=0, debug=1, info=2, warn=3, error=4, critical=5, emergency=6
+    let configured_level = env::var("CRABBYFIG_LOG_LEVEL").unwrap_or("info".to_string());
+    let configured_level_number = parse_log_level(configured_level);
+    let level_number = parse_log_level(level.to_string());
+
+    if level_number >= configured_level_number {
+        let date_string = chrono::Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
+        let parsed = format!(
+            "timestamp=\"{}\" app=\"CRABBYFIG\" level=\"{}\" message=\"{}\"",
+            date_string, level, message
+        );
+        println!("{}", parsed);
+    }
 }
 #[test]
 fn test_log_message() {
@@ -263,4 +279,29 @@ fn test_is_numeric() {
     assert!(is_numeric("123"));
     assert!(!is_numeric("abc"));
     assert!(!is_numeric("123.45"));
+}
+
+fn parse_log_level(level: String) -> u64 {
+    if level.to_lowercase() == "trace" {
+        return 0;
+    }
+    if level.to_lowercase() == "debug" {
+        return 1;
+    }
+    if level.to_lowercase() == "info" {
+        return 2;
+    }
+    if level.to_lowercase() == "warn" || level.to_lowercase() == "warning" {
+        return 3;
+    }
+    if level.to_lowercase() == "error" || level.to_lowercase() == "err" {
+        return 4;
+    }
+    if level.to_lowercase() == "critical" || level.to_lowercase() == "crit" {
+        return 5;
+    }
+    if level.to_lowercase() == "emergency" || level.to_lowercase() == "emerg" {
+        return 6;
+    }
+    7
 }

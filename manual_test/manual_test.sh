@@ -23,6 +23,8 @@ CRABBYGETS="$SCRIPT_DIR/file_a.yaml,$SCRIPT_DIR/file_b.ini" \
 CRABBYGETS_FILE="$SCRIPT_DIR/crabby_targets" \
 QWERTY_MAIN_SETTING_FOO="supercalifragilisticexpialidocious" \
 QWERTY_MAIN_SETTING_SECRET_FILE="$SCRIPT_DIR/main_secret.txt" \
+CRABBYFIX_LOG_LEVEL=error \
+CRABBYFIG_STATE_DIR="$SCRIPT_DIR/../tmp" \
 ./target/release/crabbyfig
 
 ## Now check if the contents changed
@@ -88,6 +90,8 @@ QWERTY2_NAME="Mary" \
 QWERTY_MAIN_SETTING_FOO="supercalifragilisticexpialidocious" \
 QWERTY2_DEFAULTS_FILE="$SCRIPT_DIR/QWERTY2_DEFAULTS" \
 QWERTY2_LEVEL=1200 \
+CRABBYFIG_LOG_LEVEL=error \
+CRABBYFIG_STATE_DIR="$SCRIPT_DIR/../tmp" \
 ./target/release/crabbyfig
 
 FILE_E_CONTENTS_POST=$(cat "$SCRIPT_DIR/file_e.txt");

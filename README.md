@@ -7,6 +7,13 @@ Fully supports passing secrets via `*_FILE` vars.
 
 ## Configure Your Environment
 
+### (OPTIONAL) Log Level
+
+Set the log level using the `CRABBYFIX_LOG_LEVEL` environment variable. Valid values are: `trace`, `debug`, `info`,
+`warn`, `error`.
+
+Default is `info`.
+
 ### (REQUIRED) Setting String Replacements
 
 In the files you need to configure, add replacement strings for each value you want to replace.
@@ -95,6 +102,9 @@ services:
       EXAMPLEAPP_SUITES: "stable"
       EXAMPLEAPP_COMPONENTS: "main"
 ```
+
+CRABBYFIG_LOG_LEVEL=error \
+CRABBYFIG_STATE_DIR="$SCRIPT_DIR/../tmp" \
 
 ## Security
 
